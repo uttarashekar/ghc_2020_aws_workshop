@@ -16,8 +16,12 @@ Pre-requisites:
     1. Go to https://www.npmjs.com/get-npm
     2. Click on the `Download Node.js and npm` button
     3. Download the `Current` version (14.12.0)
+
+4. Create a virtual environment:
+    ```
+    pip3 install --user pipenv
     
-5. Create a virtual environment (TBD)
+    ```
 ---
 
 Setup:
@@ -181,83 +185,87 @@ Let's add an S3 bucket to store the news articles for your website:
 Your S3 bucket for storing new stories is ready!
 
 ---
-## CreateStory API:
+Creating APIs
 ---
+
+### CreateStory API:
+
 The CreateStory API will allow you to create a new article/story for your news bulletin. These will be stored in the two
 storage resources we just created, which in turn will serve the readStories API that we will be creating next.
 Instructions:
 
 1. Navigate to your terminal and type the following command:
-```
-amplify add api
-```
-Answer the following questions as follows:
-```
-? Please select from one of the below mentioned services: REST
-? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
-? Provide a path (e.g., /book/{isbn}): /story
-? Choose a Lambda source Create a new Lambda function
-? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
-? Provide the AWS Lambda function name: createStory
-? Choose the runtime that you want to use: Python
-Only one template found - using Hello World by default.
-? Do you want to access other resources in this project from your Lambda function? Yes
-? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
-❯◯ storage
-You can access the following resource attributes as environment variables from your Lambda function
-ENV
-REGION
-? Do you want to invoke this function on a recurring schedule? No
-? Do you want to configure Lambda layers for this function? No
-? Do you want to edit the local lambda function now? No
-Successfully added resource createStory locally.
-```
+    ```
+    amplify add api
+    ```
+    Answer the following questions as follows:
+
+    ```
+    ? Please select from one of the below mentioned services: REST
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
+    ? Provide a path (e.g., /book/{isbn}): /story
+    ? Choose a Lambda source Create a new Lambda function
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
+    ? Provide the AWS Lambda function name: createStory
+    ? Choose the runtime that you want to use: Python
+    Only one template found - using Hello World by default.
+    ? Do you want to access other resources in this project from your Lambda function? Yes
+    ? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
+    ❯◯ storage
+    You can access the following resource attributes as environment variables from your Lambda function
+    ENV
+    REGION
+    ? Do you want to invoke this function on a recurring schedule? No
+    ? Do you want to configure Lambda layers for this function? No
+    ? Do you want to edit the local lambda function now? No
+    Successfully added resource createStory locally.
+    ```
 
 2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
 3. Your lambda handler code is present in the `src` folder within the `createStory` directory
 4. Let's navigate to the `index.py` file under `src` and replace the boilerplate code with the following:
-```
-import boto3
-import boto3.dynamodb
-from botocore.client import Config
-import logging
-import uuid
-import json
-
-TABLE_STORIES = "Stories-dev"
-S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
-
-def handler(event, context):
-  logging.info('Creating Dynamo DB client')
-  print("Received event: {}".format(event))
-  dynamodb_client = boto3.resource('dynamodb')
-  stories_table = dynamodb_client.Table(TABLE_STORIES)
-
-  s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
-  s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
-
-  event_body = json.loads(event['body'])
-
-
-  id = "story-"+str(uuid.uuid4())
-
-  # store text content in s3
-  content = event_body['content']
-  content_key = event_body['title'].strip().replace(" ", "-")+".txt"
-  s3_bucket.put_object(Key=content_key, Body=content, ContentType='text/plain')
-  print('Stored content in s3')
-
-  stories_table.put_item(
-    Item={
-      'id': id,
-      'title': event_body['title'],
-      's3Url': content_key,
-      'number_of_likes': 0
-    }
-  )
-  print('Stored record in Dynamo DB')
-  return True
-```
+    ```
+    import boto3
+    import boto3.dynamodb
+    from botocore.client import Config
+    import logging
+    import uuid
+    import json
+    
+    TABLE_STORIES = "Stories-dev"
+    S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
+    
+    def handler(event, context):
+      logging.info('Creating Dynamo DB client')
+      print("Received event: {}".format(event))
+      dynamodb_client = boto3.resource('dynamodb')
+      stories_table = dynamodb_client.Table(TABLE_STORIES)
+    
+      s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
+      s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
+    
+      event_body = json.loads(event['body'])
+    
+    
+      id = "story-"+str(uuid.uuid4())
+    
+      # store text content in s3
+      content = event_body['content']
+      content_key = event_body['title'].strip().replace(" ", "-")+".txt"
+      s3_bucket.put_object(Key=content_key, Body=content, ContentType='text/plain')
+      print('Stored content in s3')
+    
+      stories_table.put_item(
+        Item={
+          'id': id,
+          'title': event_body['title'],
+          's3Url': content_key,
+          'number_of_likes': 0
+        }
+      )
+      print('Stored record in Dynamo DB')
+      return True
+    ```
 5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
 We can add permissions as follows:
@@ -335,99 +343,99 @@ We can add permissions as follows:
     ```
 6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
 6. Now you are ready to push your resources to the cloud. Go to your CLI and type:
-```
-amplify push
-```
-This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
+    ```
+    amplify push
+    ```
+    This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
 6. Wait until the command succeeds.
-Great, your create story API is ready! We'll test this out on AWS Console soon!
+7. Great, your createStory API is ready! We'll test this out on AWS Console soon!
 
 ---
-## ReadStories API:
----
+### ReadStories API:
+
 The ReadStories API will allow you to read all available stories/news posts that have been saved in the backend.
 1. Navigate to your terminal and type the following command:
-```
-amplify add api
-```
-Answer the following questions as follows:
-```
-? Please select from one of the below mentioned services: REST
-? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
-? Provide a path (e.g., /book/{isbn}): /stories
-? Choose a Lambda source Create a new Lambda function
-? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
-? Provide the AWS Lambda function name: readStories
-? Choose the runtime that you want to use: Python
-Only one template found - using Hello World by default.
-? Do you want to access other resources in this project from your Lambda function? Yes
-? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
-❯◯ storage
-You can access the following resource attributes as environment variables from your Lambda function
-ENV
-REGION
-? Do you want to invoke this function on a recurring schedule? No
-? Do you want to configure Lambda layers for this function? No
-? Do you want to edit the local lambda function now? No
-Successfully added resource createStory locally.
-```
+    ```
+    amplify add api
+    ```
+    Answer the following questions as follows:
+    ```
+    ? Please select from one of the below mentioned services: REST
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
+    ? Provide a path (e.g., /book/{isbn}): /stories
+    ? Choose a Lambda source Create a new Lambda function
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
+    ? Provide the AWS Lambda function name: readStories
+    ? Choose the runtime that you want to use: Python
+    Only one template found - using Hello World by default.
+    ? Do you want to access other resources in this project from your Lambda function? Yes
+    ? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
+    ❯◯ storage
+    You can access the following resource attributes as environment variables from your Lambda function
+    ENV
+    REGION
+    ? Do you want to invoke this function on a recurring schedule? No
+    ? Do you want to configure Lambda layers for this function? No
+    ? Do you want to edit the local lambda function now? No
+    Successfully added resource createStory locally.
+    ```
 
 2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
 3. Your lambda handler code is present in the `src` folder within the `readStories` directory
 4. Let's navigate to the `index.py` file under `src` and replace the boilerplate code with the following:
-```
-import boto3
-import boto3.dynamodb
-import decimal
-from botocore.client import Config
-import logging
-import json
-
-TABLE_STORIES = "Stories-dev"
-S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
-
-def handler(event, context):
-  logging.info('Creating Dynamo DB client')
-  print("Received event: {}".format(event))
-  dynamodb_client = boto3.resource('dynamodb')
-  stories_table = dynamodb_client.Table(TABLE_STORIES)
-
-  s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
-  s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
-
-  stories = stories_table.scan()
-
-  for story in stories['Items']:
-      print("story: {}".format(story))
-      txt_content = s3_client.Object(S3_BUCKET_NAME, story['s3Url']).get()['Body'].read().decode('utf-8').splitlines()
-      print("content: {}".format(txt_content))
-      story['content'] = txt_content
-      print("story with content: {}".format(story))
-
-  body = {
-    "stories": stories['Items']
-  }
-
-  response = {
-    "statusCode": 200,
-    "body": json.dumps(body, default=decimal_default),
-    "headers": {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
-        "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization, X-Request-With"
-    }
-  }
-
-  return response
-
-# Json does not decode decimal values by default.
-# We can remove this method by storing num_likes as string values
-def decimal_default(obj):
-  if isinstance(obj, decimal.Decimal):
-    return float(obj)
-  raise TypeError
-```
+    ```
+    import boto3
+    import boto3.dynamodb
+    import decimal
+    from botocore.client import Config
+    import logging
+    import json
+    
+    TABLE_STORIES = "Stories-dev"
+    S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
+    
+    def handler(event, context):
+      logging.info('Creating Dynamo DB client')
+      print("Received event: {}".format(event))
+      dynamodb_client = boto3.resource('dynamodb')
+      stories_table = dynamodb_client.Table(TABLE_STORIES)
+    
+      s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
+      s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
+    
+      stories = stories_table.scan()
+    
+      for story in stories['Items']:
+          print("story: {}".format(story))
+          txt_content = s3_client.Object(S3_BUCKET_NAME, story['s3Url']).get()['Body'].read().decode('utf-8').splitlines()
+          print("content: {}".format(txt_content))
+          story['content'] = txt_content
+          print("story with content: {}".format(story))
+    
+      body = {
+        "stories": stories['Items']
+      }
+    
+      response = {
+        "statusCode": 200,
+        "body": json.dumps(body, default=decimal_default),
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+            "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization, X-Request-With"
+        }
+      }
+    
+      return response
+    
+    # Json does not decode decimal values by default.
+    # We can remove this method by storing num_likes as string values
+    def decimal_default(obj):
+      if isinstance(obj, decimal.Decimal):
+        return float(obj)
+      raise TypeError
+    ```
 5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage. We can add permissions as follows:
     1. Navigate to the `readStories-cloudformation-template.json` file in the `readStories` directory
@@ -504,15 +512,16 @@ def decimal_default(obj):
    ```
 6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
 6. Go to your CLI and type:
-```
-amplify push
-```
-This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
+    ```
+    amplify push
+    ```
+    This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
 7. Wait until the command succeeds.
 8. Great! Your code for the readStories API is now ready!
 
 ---
-Test your changes on AWS Console: (TBD- Do we need this section??)
+(TBD- Do we need this section??)
+Test your changes on AWS Console: 
 
 1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
 2. You should be able to see your `createStory` API and `readStories` API here.
