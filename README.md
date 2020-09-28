@@ -142,16 +142,16 @@ We first want to add a Dynamo DB table for our Community News Bulletin. Let's cr
     
     You can now add columns to the table.
     
-    ? What would you like to name this column: ID
+    ? What would you like to name this column: id
     ? Please choose the data type: string
     ? Would you like to add another column? Yes
-    ? What would you like to name this column: Title
+    ? What would you like to name this column: title
     ? Please choose the data type: string
     ? Would you like to add another column? Yes
-    ? What would you like to name this column: Content_url
+    ? What would you like to name this column: content_url
     ? Please choose the data type: string
     ? Would you like to add another column? Yes
-    ? What would you like to name this column: Num_likes
+    ? What would you like to name this column: num_likes
     ? Please choose the data type: number
     ? Would you like to add another column? No
     
@@ -239,7 +239,7 @@ Instructions:
     import json
     
     TABLE_STORIES = "Stories-dev"
-    S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
+    S3_BUCKET_NAME = "ghc2020-test1"
     
     def handler(event, context):
       logging.info('Creating Dynamo DB client')
@@ -265,8 +265,8 @@ Instructions:
         Item={
           'id': id,
           'title': event_body['title'],
-          's3Url': content_key,
-          'number_of_likes': 0
+          'content_url': content_key,
+          'num_likes': 0
         }
       )
       print('Stored record in Dynamo DB')
@@ -415,7 +415,7 @@ The ReadStories API will allow you to read all available stories/news posts that
     
       for story in stories['Items']:
           print("story: {}".format(story))
-          txt_content = s3_client.Object(S3_BUCKET_NAME, story['s3Url']).get()['Body'].read().decode('utf-8').splitlines()
+          txt_content = s3_client.Object(S3_BUCKET_NAME, story['content_url']).get()['Body'].read().decode('utf-8').splitlines()
           print("content: {}".format(txt_content))
           story['content'] = txt_content
           print("story with content: {}".format(story))
@@ -485,8 +485,8 @@ The ReadStories API will allow you to read all available stories/news posts that
                  ],
                  "Effect": "Allow",
                  "Resource": [
-                   "arn:aws:s3:::ghc2020-test1",
-                   "arn:aws:s3:::ghc2020-test1/*"
+                   "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>",
+                   "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>/*"
                  ]
                },
                {
@@ -518,7 +518,7 @@ The ReadStories API will allow you to read all available stories/news posts that
          }
        }
    ```
-6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
+6. In the above code, replace the `<YOUR_S3_BUCKET_NAME>` in the S3 Policy with name you gave your S3 bucket.
 6. Go to your CLI and type:
     ```
     amplify push

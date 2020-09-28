@@ -21,7 +21,7 @@ def handler(event, context):
 
   for story in stories['Items']:
       print("story: {}".format(story))
-      txt_content = s3_client.Object(S3_BUCKET_NAME, story['s3Url']).get()['Body'].read().decode('utf-8').splitlines()
+      txt_content = s3_client.Object(S3_BUCKET_NAME, story['content_url']).get()['Body'].read().decode('utf-8').splitlines()
       print("content: {}".format(txt_content))
       story['content'] = txt_content
       print("story with content: {}".format(story))

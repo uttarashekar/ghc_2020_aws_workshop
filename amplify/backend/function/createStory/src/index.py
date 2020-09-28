@@ -32,8 +32,8 @@ def handler(event, context):
     Item={
       'id': id,
       'title': event_body['title'],
-      's3Url': content_key,
-      'number_of_likes': 0
+      'content_url': content_key,
+      'num_likes': 0
     }
   )
   print('Stored record in Dynamo DB')
