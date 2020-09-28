@@ -222,6 +222,8 @@ Instructions:
     ? Do you want to invoke this function on a recurring schedule? No
     ? Do you want to configure Lambda layers for this function? No
     ? Do you want to edit the local lambda function now? No
+    ? Restrict API access No
+    ? Do you want to add another path? No
     Successfully added resource createStory locally.
     ```
 
@@ -381,6 +383,8 @@ The ReadStories API will allow you to read all available stories/news posts that
     ? Do you want to invoke this function on a recurring schedule? No
     ? Do you want to configure Lambda layers for this function? No
     ? Do you want to edit the local lambda function now? No
+    ? Restrict API access No
+    ? Do you want to add another path? No
     Successfully added resource readStories locally.
     ```
 
