@@ -354,7 +354,7 @@ Answer the following questions as follows:
 ```
 ? Please select from one of the below mentioned services: REST
 ? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
-? Provide a path (e.g., /book/{isbn}): /readStories
+? Provide a path (e.g., /book/{isbn}): /stories
 ? Choose a Lambda source Create a new Lambda function
 ? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
 ? Provide the AWS Lambda function name: readStories
