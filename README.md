@@ -173,7 +173,7 @@ Let's add an S3 bucket to store the news articles for your website:
     3. Click on S3. You will navigate into the Amazon S3 Console.
     4. Click on `Create bucket`
     5. In the `General Configuration` section:
-        1. Type in a bucket name like `<username>_ghc_2020_news_bulletin`
+        1. Type in a bucket name like `<username>-ghc-2020-news-bulletin`
         2. Replace `<username>` with a unique name. All S3 bucket names have to be unique globally
         3. Choose the region that is closest to where you are based. For example, I live in Seattle so I chose `US West (Oregon) us-west-2`
     6. Don't make any other changes and click on `Create Bucket` at the bottom of the page
@@ -204,6 +204,13 @@ Only one template found - using Hello World by default.
 ? Do you want to access other resources in this project from your Lambda function? Yes
 ? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
 ❯◯ storage
+You can access the following resource attributes as environment variables from your Lambda function
+ENV
+REGION
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to configure Lambda layers for this function? No
+? Do you want to edit the local lambda function now? No
+Successfully added resource createStory locally.
 ```
 
 2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
@@ -356,6 +363,13 @@ Only one template found - using Hello World by default.
 ? Do you want to access other resources in this project from your Lambda function? Yes
 ? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
 ❯◯ storage
+You can access the following resource attributes as environment variables from your Lambda function
+ENV
+REGION
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to configure Lambda layers for this function? No
+? Do you want to edit the local lambda function now? No
+Successfully added resource createStory locally.
 ```
 
 2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
@@ -516,4 +530,43 @@ Test your changes on AWS Console: (TBD- Do we need this section??)
 ---
 Create a front-end:
 ---
-Okay, now you're all set 
+Okay, now you're all set with the backend code! Let's dive into front-end! Since this workshop focuses mainly on AWS backend code, your will simply copy over resources from the GitHub link into your package.
+
+Instructions to do this are as follows:
+1. Go to your workspace directory outside of this project.
+    ```aidl
+    cd ~
+    mkdir ghc_2020_workshop_code
+    cd ghc_2020_workshop_code
+    gh repo clone uttarashekar/ghc_2020_aws_workshop
+    ```
+    This command should pull the code from our workshop GitHub link into your workspace.
+
+2. Copy over the following directories from the workshop project into your project's workspace. Follow the same path tree:
+    ```aidl
+    /public
+    /src
+    ```
+3. Copy over the following files from the workshop project into your project's workspace. Follow the same path tree:
+    ```
+    .babelrc
+    webpack.config.js
+    ```
+3. Go to your terminal and run the following commands:
+    ```
+    npm i -S react react-dom webpack
+    
+    npm install --save-dev @babel/core @babel/preset-env \@babel/preset-react babel-loader
+    
+    npm install --save @babel/polyfill
+    
+    npm i react-router-dom
+    ```
+4. Run your website on local host by calling the following command:
+```
+npm run dev
+```
+5. Scroll to the bottom of the page and Create a new story
+6. Click Submit
+7. Refresh the page
+8. See your story show up
