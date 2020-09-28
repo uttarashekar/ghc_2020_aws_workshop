@@ -42,6 +42,10 @@ Setup:
 3. Download, install and configure the Amplify CLI:
     ```
     npm install -g @aws-amplify/cli 
+    ```
+    
+4. Configure your AWS Amplify
+    ```
     amplify configure
     ```
 4. Follow the instructions as shown on the terminal and AWS Console. Make sure you create a new AWS Profile for this project:
@@ -106,9 +110,9 @@ Setup:
     The `amplify init` command initializes the project, sets up deployment resources in the cloud, and makes your project ready for Amplify.
 
 7. Once this is done, call the following command on your CLI:
-```
-npm i aws-amplify
-```
+    ```
+    npm i aws-amplify
+    ```
 At this point your project set up is done. Let's dive into adding new components to our service!
 
 ---
