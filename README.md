@@ -376,10 +376,9 @@ def decimal_default(obj):
     return float(obj)
   raise TypeError
 ```
-5. 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
-   We can add permissions as follows:
-       1. Navigate to the `readStories-cloudformation-template.json` file in the `readStories` directory
-       2. Replace the `lambdaexecutionpolicy` section with the following:
+5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage. We can add permissions as follows:
+    1. Navigate to the `readStories-cloudformation-template.json` file in the `readStories` directory
+    2. Replace the `lambdaexecutionpolicy` section with the following:
     ```
    "lambdaexecutionpolicy": {
          "DependsOn": [
@@ -451,14 +450,18 @@ def decimal_default(obj):
        }
    ```
 
-6. Go to your CLI and type
-```aidl
+6. Go to your CLI and type:
+```
 amplify push
 ```
 This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
 7. Wait until the command succeeds.
+8. Great! Your code for the readStories API is now ready!
 
-8. Once the amplify push command is successful, navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
-9. You should be able to see your `readStories` API here. Click on it.
-10. Click on `ANY` under `/stories`
-11. Click on the `TEST` button that shows up 
+---
+Test your changes on AWS Console:
+
+1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
+2. You should be able to see your `readStories` API here. Click on it.
+3. Click on `ANY` under `/stories`
+4. Click on the `TEST` button that shows up 
