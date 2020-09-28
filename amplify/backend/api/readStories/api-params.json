@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/stories",
+            "lambdaFunction": "readStories",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/stories"
+        }
+    ],
+    "resourceName": "readStories",
+    "apiName": "readStories",
+    "functionArns": [
+        {
+            "lambdaFunction": "readStories"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-test1project-dev-142651-authRole",
+        "unAuthRoleName": "amplify-test1project-dev-142651-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "readStories",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

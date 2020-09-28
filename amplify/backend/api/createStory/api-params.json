@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/story",
+            "lambdaFunction": "createStory",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/story"
+        }
+    ],
+    "resourceName": "createStory",
+    "apiName": "createStory",
+    "functionArns": [
+        {
+            "lambdaFunction": "createStory"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-test1project-dev-142651-authRole",
+        "unAuthRoleName": "amplify-test1project-dev-142651-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "createStory",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
