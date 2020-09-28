@@ -381,7 +381,7 @@ The ReadStories API will allow you to read all available stories/news posts that
     ? Do you want to invoke this function on a recurring schedule? No
     ? Do you want to configure Lambda layers for this function? No
     ? Do you want to edit the local lambda function now? No
-    Successfully added resource createStory locally.
+    Successfully added resource readStories locally.
     ```
 
 2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
