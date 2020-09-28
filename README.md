@@ -144,7 +144,161 @@ Your Dynamo DB storage is ready!
 Your S3 bucket for storing new stories is ready!
 
 ---
-## Create ReadStories API:
+## CreateStory API:
+---
+The CreateStory API will allow you to create a new article/story for your news bulletin. These will be stored in the two
+storage resources we just created, which in turn will serve the readStories API that we will be creating next.
+Instructions:
+
+1. Navigate to your terminal and type the following command:
+```
+amplify add api
+```
+Answer the following questions as follows:
+```
+? Please select from one of the below mentioned services: REST
+? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
+? Provide a path (e.g., /book/{isbn}): /story
+? Choose a Lambda source Create a new Lambda function
+? Provide a friendly name for your resource to be used as a label for this category in the project: createStory
+? Provide the AWS Lambda function name: createStory
+? Choose the runtime that you want to use: Python
+Only one template found - using Hello World by default.
+? Do you want to access other resources in this project from your Lambda function? Yes
+? Select the category (Press <space> to select, <a> to toggle all, <i> to invert selection)
+❯◯ storage
+```
+
+2. Navigate to your IDE. You should now see the backend code for the readStories API in the `<project_name>/amplify/backend/function` directory
+3. Your lambda handler code is present in the `src` folder within the `createStory` directory
+4. Let's navigate to the `index.py` file under `src` and replace the boilerplate code with the following:
+```
+import boto3
+import boto3.dynamodb
+from botocore.client import Config
+import logging
+import uuid
+import json
+
+TABLE_STORIES = "Stories-dev"
+S3_BUCKET_NAME = "ghc2020-test1"
+
+def handler(event, context):
+  logging.info('Creating Dynamo DB client')
+  print("Received event: {}".format(event))
+  dynamodb_client = boto3.resource('dynamodb')
+  stories_table = dynamodb_client.Table(TABLE_STORIES)
+
+  s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
+  s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
+
+  event_body = json.loads(event['body'])
+
+
+  id = "story-"+str(uuid.uuid4())
+
+  # store text content in s3
+  content = event_body['content']
+  content_key = event_body['title'].strip().replace(" ", "-")+".txt"
+  s3_bucket.put_object(Key=content_key, Body=content, ContentType='text/plain')
+  print('Stored content in s3')
+
+  stories_table.put_item(
+    Item={
+      'id': id,
+      'title': event_body['title'],
+      's3Url': content_key,
+      'number_of_likes': 0
+    }
+  )
+  print('Stored record in Dynamo DB')
+  return True
+```
+5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
+We can add permissions as follows:
+    1. Navigate to the `createStory-cloudformation-template.json` file in the `createStory` directory
+    2. Replace the `lambdaexecutionpolicy` section with the following:
+ ```
+"lambdaexecutionpolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ReadWriteTable",
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem"
+              ],
+              "Resource": "arn:aws:dynamodb:*:*:table/Stories-dev"
+            },
+            {
+              "Sid": "s3Access",
+              "Action": [
+                "s3:*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::ghc2020-test1",
+                "arn:aws:s3:::ghc2020-test1/*"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": {
+                      "Ref": "LambdaFunction"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+```
+
+6. Now you are ready to push your resources to the cloud. Go to your CLI and type:
+```
+amplify push
+```
+This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
+6. Wait until the command succeeds.
+Great, your create story API is ready! We'll test this out on AWS Console soon!
+
+---
+## ReadStories API:
 ---
 The ReadStories API will allow you to read all available stories/news posts that have been saved in the backend.
 1. Navigate to your terminal and type the following command:
@@ -154,11 +308,11 @@ amplify add api
 Answer the following questions as follows:
 ```
 ? Please select from one of the below mentioned services: REST
-? Provide a friendly name for your resource to be used as a label for this category in the project: likeOrComment
-? Provide a path (e.g., /book/{isbn}): /addLikeOrComment
+? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
+? Provide a path (e.g., /book/{isbn}): /readStories
 ? Choose a Lambda source Create a new Lambda function
-? Provide a friendly name for your resource to be used as a label for this category in the project: addLikeOrComment
-? Provide the AWS Lambda function name: addLikeOrComment
+? Provide a friendly name for your resource to be used as a label for this category in the project: readStories
+? Provide the AWS Lambda function name: readStories
 ? Choose the runtime that you want to use: Python
 Only one template found - using Hello World by default.
 ? Do you want to access other resources in this project from your Lambda function? Yes
@@ -170,5 +324,141 @@ Only one template found - using Hello World by default.
 3. Your lambda handler code is present in the `src` folder within the `readStories` directory
 4. Let's navigate to the `index.py` file under `src` and replace the boilerplate code with the following:
 ```
+import boto3
+import boto3.dynamodb
+import decimal
+from botocore.client import Config
+import logging
+import json
 
+TABLE_STORIES = "Stories-dev"
+S3_BUCKET_NAME = "ghc2020-test1"
+
+def handler(event, context):
+  logging.info('Creating Dynamo DB client')
+  print("Received event: {}".format(event))
+  dynamodb_client = boto3.resource('dynamodb')
+  stories_table = dynamodb_client.Table(TABLE_STORIES)
+
+  s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
+  s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
+
+  stories = stories_table.scan()
+
+  for story in stories['Items']:
+      print("story: {}".format(story))
+      txt_content = s3_client.Object(S3_BUCKET_NAME, story['s3Url']).get()['Body'].read().decode('utf-8').splitlines()
+      print("content: {}".format(txt_content))
+      story['content'] = txt_content
+      print("story with content: {}".format(story))
+
+  body = {
+    "stories": stories['Items']
+  }
+
+  response = {
+    "statusCode": 200,
+    "body": json.dumps(body, default=decimal_default),
+    "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+        "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization, X-Request-With"
+    }
+  }
+
+  return response
+
+# Json does not decode decimal values by default.
+# We can remove this method by storing num_likes as string values
+def decimal_default(obj):
+  if isinstance(obj, decimal.Decimal):
+    return float(obj)
+  raise TypeError
 ```
+5. 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
+   We can add permissions as follows:
+       1. Navigate to the `readStories-cloudformation-template.json` file in the `readStories` directory
+       2. Replace the `lambdaexecutionpolicy` section with the following:
+    ```
+   "lambdaexecutionpolicy": {
+         "DependsOn": [
+           "LambdaExecutionRole"
+         ],
+         "Type": "AWS::IAM::Policy",
+         "Properties": {
+           "PolicyName": "lambda-execution-policy",
+           "Roles": [
+             {
+               "Ref": "LambdaExecutionRole"
+             }
+           ],
+           "PolicyDocument": {
+             "Version": "2012-10-17",
+             "Statement": [
+               {
+                 "Sid": "ReadWriteTable",
+                 "Effect": "Allow",
+                 "Action": [
+                   "dynamodb:BatchGetItem",
+                   "dynamodb:GetItem",
+                   "dynamodb:Query",
+                   "dynamodb:Scan",
+                   "dynamodb:BatchWriteItem",
+                   "dynamodb:PutItem",
+                   "dynamodb:UpdateItem"
+                 ],
+                 "Resource": "arn:aws:dynamodb:*:*:table/Stories-dev"
+               },
+               {
+                 "Sid": "s3Access",
+                 "Action": [
+                   "s3:*"
+                 ],
+                 "Effect": "Allow",
+                 "Resource": [
+                   "arn:aws:s3:::ghc2020-test1",
+                   "arn:aws:s3:::ghc2020-test1/*"
+                 ]
+               },
+               {
+                 "Effect": "Allow",
+                 "Action": [
+                   "logs:CreateLogGroup",
+                   "logs:CreateLogStream",
+                   "logs:PutLogEvents"
+                 ],
+                 "Resource": {
+                   "Fn::Sub": [
+                     "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                     {
+                       "region": {
+                         "Ref": "AWS::Region"
+                       },
+                       "account": {
+                         "Ref": "AWS::AccountId"
+                       },
+                       "lambda": {
+                         "Ref": "LambdaFunction"
+                       }
+                     }
+                   ]
+                 }
+               }
+             ]
+           }
+         }
+       }
+   ```
+
+6. Go to your CLI and type
+```aidl
+amplify push
+```
+This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
+7. Wait until the command succeeds.
+
+8. Once the amplify push command is successful, navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
+9. You should be able to see your `readStories` API here. Click on it.
+10. Click on `ANY` under `/stories`
+11. Click on the `TEST` button that shows up 
