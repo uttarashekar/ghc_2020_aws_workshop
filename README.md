@@ -15,7 +15,9 @@ Pre-requisites:
 3. Install npm. 
     1. Go to https://www.npmjs.com/get-npm
     2. Click on the `Download Node.js and npm` button
-    3. Download the Latest Current version
+    3. Download the `Current` version (14.12.0)
+    
+5. Create a virtual environment (TBD)
 ---
 
 Setup:
@@ -23,114 +25,149 @@ Setup:
 
 1. Open your terminal and navigate to the location that you want to create your project
 
-```
-cd ~
-```
+    ```
+    cd ~
+    ```
 
 2. Create a directory and navigate into it
-```
-mkdir ghc2020_aws_workshop
-cd ghc2020_aws_workshop
-```
+    ```
+    mkdir ghc2020_aws_workshop
+    cd ghc2020_aws_workshop
+    ```
 
 3. Download, install and configure the Amplify CLI:
-```
-npm install -g @aws-amplify/cli 
-amplify configure
-```
+    ```
+    npm install -g @aws-amplify/cli 
+    amplify configure
+    ```
+4. Follow the instructions as shown on the terminal and AWS Console. Make sure you create a new AWS Profile for this project:
+    ```
+    Sign in to your AWS administrator account:
+    https://console.aws.amazon.com/
+    Press Enter to continue
+    
+    Specify the AWS Region
+    ? region:  us-west-2
+    Specify the username of the new IAM user:
+    ? user name:  amplify-<username>
+    Complete the user creation using the AWS console
+    https://console.aws.amazon.com/iam/home?region=us-west-2#/users$new?step=final&accessKey&userNames=amplify-gaurav&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess
+    Press Enter to continue
+    
+    Enter the access key of the newly created user:
+    ? accessKeyId:  ********************
+    ? secretAccessKey:  ****************************************
+    This would update/create the AWS Profile in your local machine
+    ? Profile Name:  amplify-<username>
+    
+    Successfully set up the new user.
+    ```
 
 4. Create a new React project
-```
-npx create-react-app aws-community-news-bulletin
-```
+    ```
+    npx create-react-app aws-community-news-bulletin
+    ```
 
 5. Navigate into the folder
-```
-cd aws-community-news-bulletin
-```
+    ```
+    cd aws-community-news-bulletin
+    ```
 
 6. Initialize AWS Amplify. 
-```
-amplify init
-```
-Answer the questions as following:
-```
-? Enter a name for the project ghc2020NewsBulletin
-? Enter a name for the environment dev
-? Choose your default editor: None
-? Choose the type of app that you're building javascript
-Please tell us about your project
-? What javascript framework are you using react
-? Source Directory Path:  src
-? Distribution Directory Path: build
-? Build Command:  npm run-script build
-? Start Command: npm run-script start
-```
-Once this is done, call the following command on your CLI:
+    ```
+    amplify init
+    ```
+    Answer the questions as following:
+    
+    ```
+    ? Enter a name for the project ghc2020NewsBulletin
+    ? Enter a name for the environment dev
+    ? Choose your default editor: None
+    ? Choose the type of app that you're building javascript
+    Please tell us about your project
+    ? What javascript framework are you using react
+    ? Source Directory Path:  src
+    ? Distribution Directory Path: build
+    ? Build Command:  npm run-script build
+    ? Start Command: npm run-script start
+    Using default provider  awscloudformation
+    
+    For more information on AWS Profiles, see:
+    https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+    
+    ? Do you want to use an AWS profile? Yes
+    ? Please choose the profile you want to use amplify-<username>
+    
+    ```
+    The `amplify init` command initializes the project, sets up deployment resources in the cloud, and makes your project ready for Amplify.
+
+7. Once this is done, call the following command on your CLI:
 ```
 npm i aws-amplify
 ```
-The `amplify init` command initializes the project, sets up deployment resources in the cloud, and makes your project ready for Amplify.
-
 At this point your project set up is done. Let's dive into adding new components to our service!
 
 ---
-### Set up storage for the service:
+
+Set up storage for the service:
 ---
+
+### Creating a Dynamo DB Table
 
 We first want to add a Dynamo DB table for our Community News Bulletin. Let's create a table called "Stories" which will store the different posts/news articles to be displayed on the website.
 
-AWS Amplify allows us to easily create a Dynamo DB using CLI commands:
+    AWS Amplify allows us to easily create a Dynamo DB using CLI commands:
+    
+    Let's start by creating a table 'Stories'
+    ```
+    amplify add storage
+    ```
+    Answer the questions as follows. Column names are case sensitive so please use the same case in your responses:
+    ```
+    ? Please select from one of the below mentioned services: NoSQL Database
+    
+    Welcome to the NoSQL DynamoDB database wizard
+    This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
+    
+    ? Please provide a friendly name for your resource that will be used to label this category in the project: Stories
+    ? Please provide table name: Stories
+    
+    You can now add columns to the table.
+    
+    ? What would you like to name this column: ID
+    ? Please choose the data type: string
+    ? Would you like to add another column? Yes
+    ? What would you like to name this column: Title
+    ? Please choose the data type: string
+    ? Would you like to add another column? Yes
+    ? What would you like to name this column: Content_url
+    ? Please choose the data type: string
+    ? Would you like to add another column? Yes
+    ? What would you like to name this column: Num_likes
+    ? Please choose the data type: number
+    ? Would you like to add another column? No
+    
+    Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.
+    
+    To learn more about primary keys, see:
+    https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
+    
+    ? Please choose partition key for the table: ID
+    ? Do you want to add a sort key to your table? No
+    
+    You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.
+    To learn more about indexes, see:
+    https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes
+    
+    ? Do you want to add global secondary indexes to your table? No
+    ? Do you want to add a Lambda Trigger for your Table? No
+    ```
+    Your Dynamo DB storage is ready!
 
-1. Let's start by creating a table 'Stories'
-```
-amplify add storage
-```
-Answer the questions as follows. Column names are case sensitive so please use the same case in your responses:
-```
-? Please select from one of the below mentioned services: NoSQL Database
+### Creating an S3 bucket
 
-Welcome to the NoSQL DynamoDB database wizard
-This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
+Let's add an S3 bucket to store the news articles for your website:
 
-? Please provide a friendly name for your resource that will be used to label this category in the project: Stories
-? Please provide table name: Stories
-
-You can now add columns to the table.
-
-? What would you like to name this column: ID
-? Please choose the data type: string
-? Would you like to add another column? Yes
-? What would you like to name this column: Title
-? Please choose the data type: string
-? Would you like to add another column? Yes
-? What would you like to name this column: Content_url
-? Please choose the data type: string
-? Would you like to add another column? Yes
-? What would you like to name this column: Num_likes
-? Please choose the data type: number
-? Would you like to add another column? No
-
-Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.
-
-To learn more about primary keys, see:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
-
-? Please choose partition key for the table: ID
-? Do you want to add a sort key to your table? No
-
-You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.
-To learn more about indexes, see:
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes
-
-? Do you want to add global secondary indexes to your table? No
-? Do you want to add a Lambda Trigger for your Table? No
-```
-Your Dynamo DB storage is ready!
-
----
-
-2. Let's add an S3 bucket to store the news articles for your website:
     1. Navigate to the [AWS Console](https://console.aws.amazon.com/console/home)
     2. In the search bar under `Find Services`, type `S3`
     3. Click on S3. You will navigate into the Amazon S3 Console.
@@ -461,10 +498,22 @@ This command will prompt you for confirmation. Type Yes and push the created res
 8. Great! Your code for the readStories API is now ready!
 
 ---
-Test your changes on AWS Console:
+Test your changes on AWS Console: (TBD- Do we need this section??)
 
 1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
 2. You should be able to see your `createStory` API and `readStories` API here.
 3. Click on the `createStory` API
-3. Click on `ANY` under `/stories`
-4. Click on the `TEST` button that shows up
+4. Click on `ANY` under `/story`
+5. Click on the `TEST` button on the right panel
+6. Click on the dropdown under `METHOD` and select `POST`
+7. In the Request Body section, paste the following:
+```
+{
+    
+}
+
+```
+---
+Create a front-end:
+---
+Okay, now you're all set 
