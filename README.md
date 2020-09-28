@@ -181,7 +181,7 @@ import uuid
 import json
 
 TABLE_STORIES = "Stories-dev"
-S3_BUCKET_NAME = "ghc2020-test1"
+S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
 
 def handler(event, context):
   logging.info('Creating Dynamo DB client')
@@ -214,81 +214,82 @@ def handler(event, context):
   print('Stored record in Dynamo DB')
   return True
 ```
+5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
 We can add permissions as follows:
     1. Navigate to the `createStory-cloudformation-template.json` file in the `createStory` directory
     2. Replace the `lambdaexecutionpolicy` section with the following:
- ```
-"lambdaexecutionpolicy": {
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ],
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "lambda-execution-policy",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Sid": "ReadWriteTable",
-              "Effect": "Allow",
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetItem",
-                "dynamodb:Query",
-                "dynamodb:Scan",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem"
-              ],
-              "Resource": "arn:aws:dynamodb:*:*:table/Stories-dev"
-            },
-            {
-              "Sid": "s3Access",
-              "Action": [
-                "s3:*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                "arn:aws:s3:::ghc2020-test1",
-                "arn:aws:s3:::ghc2020-test1/*"
-              ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
-                  {
-                    "region": {
-                      "Ref": "AWS::Region"
-                    },
-                    "account": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "lambda": {
-                      "Ref": "LambdaFunction"
-                    }
-                  }
-                ]
+     ```
+    "lambdaexecutionpolicy": {
+          "DependsOn": [
+            "LambdaExecutionRole"
+          ],
+          "Type": "AWS::IAM::Policy",
+          "Properties": {
+            "PolicyName": "lambda-execution-policy",
+            "Roles": [
+              {
+                "Ref": "LambdaExecutionRole"
               }
+            ],
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ReadWriteTable",
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem"
+                  ],
+                  "Resource": "arn:aws:dynamodb:*:*:table/Stories-dev"
+                },
+                {
+                  "Sid": "s3Access",
+                  "Action": [
+                    "s3:*"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>",
+                    "arn:aws:s3:::<YOUR_S3_BUCKET_NAME>/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": [
+                      "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                      {
+                        "region": {
+                          "Ref": "AWS::Region"
+                        },
+                        "account": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "lambda": {
+                          "Ref": "LambdaFunction"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
             }
-          ]
+          }
         }
-      }
-    }
-```
-
+    ```
+6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
 6. Now you are ready to push your resources to the cloud. Go to your CLI and type:
 ```
 amplify push
@@ -332,7 +333,7 @@ import logging
 import json
 
 TABLE_STORIES = "Stories-dev"
-S3_BUCKET_NAME = "ghc2020-test1"
+S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
 
 def handler(event, context):
   logging.info('Creating Dynamo DB client')
@@ -376,6 +377,7 @@ def decimal_default(obj):
     return float(obj)
   raise TypeError
 ```
+5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage. We can add permissions as follows:
     1. Navigate to the `readStories-cloudformation-template.json` file in the `readStories` directory
     2. Replace the `lambdaexecutionpolicy` section with the following:
@@ -449,7 +451,7 @@ def decimal_default(obj):
          }
        }
    ```
-
+6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
 6. Go to your CLI and type:
 ```
 amplify push
@@ -462,6 +464,7 @@ This command will prompt you for confirmation. Type Yes and push the created res
 Test your changes on AWS Console:
 
 1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
-2. You should be able to see your `readStories` API here. Click on it.
+2. You should be able to see your `createStory` API and `readStories` API here.
+3. Click on the `createStory` API
 3. Click on `ANY` under `/stories`
-4. Click on the `TEST` button that shows up 
+4. Click on the `TEST` button that shows up
