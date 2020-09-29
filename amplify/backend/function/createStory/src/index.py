@@ -37,4 +37,7 @@ def handler(event, context):
     }
   )
   print('Stored record in Dynamo DB')
-  return True
+  return {
+    'statusCode': 200,
+    'body': json.dumps('Story created successfully!')
+  }

@@ -3,25 +3,25 @@ Workshop Instructions:
 Pre-requisites:
 ---
 1. Make sure you have an AWS account
-    1. Log in to aws.amazon.com
+    1. Log in to [AWS](aws.amazon.com)
     2. Click on `Sign in to the Console` button on the top right
     3. Enter your Amazon username and password
     4. Click on `Sign In`
 
-2. Make sure you have installed Python3 on your computer
+2. If you don't have Python installed, make sure you have installed Python on your computer
     1. Go to [this link](https://www.python.org/downloads/)
-    2. Download the latest version of Python3
+    2. Download the latest version of Python
     
 3. Install npm. 
     1. Go to https://www.npmjs.com/get-npm
     2. Click on the `Download Node.js and npm` button
-    3. Download the `Current` version (14.12.0)
+    3. Download the `12.18.4 LTS` version (Recommended for most users)
 
-4. Create a virtual environment:
-    ```
-    pip3 install --user pipenv
-    
-    ```
+4. Download, install and configure the Amplify CLI (may require admin (sudo) permissions):
+   ```
+   npm install -g @aws-amplify/cli 
+   ```
+
 ---
 
 Setup:
@@ -37,11 +37,6 @@ Setup:
     ```
     mkdir ghc2020_aws_workshop
     cd ghc2020_aws_workshop
-    ```
-
-3. Download, install and configure the Amplify CLI:
-    ```
-    npm install -g @aws-amplify/cli 
     ```
     
 4. Configure your AWS Amplify
@@ -123,68 +118,73 @@ Set up storage for the service:
 ### Creating a Dynamo DB Table
 
 We first want to add a Dynamo DB table for our Community News Bulletin. Let's create a table called "Stories" which will store the different posts/news articles to be displayed on the website.
+    
+AWS Amplify allows us to easily create a Dynamo DB using CLI commands:
 
-    AWS Amplify allows us to easily create a Dynamo DB using CLI commands:
+Let's start by creating a table 'Stories':
     
-    Let's start by creating a table 'Stories'
-    ```
-    amplify add storage
-    ```
-    Answer the questions as follows. Column names are case sensitive so please use the same case in your responses:
-    ```
-    ? Please select from one of the below mentioned services: NoSQL Database
     
-    Welcome to the NoSQL DynamoDB database wizard
-    This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
-    
-    ? Please provide a friendly name for your resource that will be used to label this category in the project: Stories
-    ? Please provide table name: Stories
-    
-    You can now add columns to the table.
-    
-    ? What would you like to name this column: id
-    ? Please choose the data type: string
-    ? Would you like to add another column? Yes
-    ? What would you like to name this column: title
-    ? Please choose the data type: string
-    ? Would you like to add another column? Yes
-    ? What would you like to name this column: content_url
-    ? Please choose the data type: string
-    ? Would you like to add another column? Yes
-    ? What would you like to name this column: num_likes
-    ? Please choose the data type: number
-    ? Would you like to add another column? No
-    
-    Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.
-    
-    To learn more about primary keys, see:
-    https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
-    
-    ? Please choose partition key for the table: ID
-    ? Do you want to add a sort key to your table? No
-    
-    You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.
-    To learn more about indexes, see:
-    https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes
-    
-    ? Do you want to add global secondary indexes to your table? No
-    ? Do you want to add a Lambda Trigger for your Table? No
-    ```
-    Your Dynamo DB storage is ready!
+```
+amplify add storage
+```
+
+Answer the questions as follows. Column names are case sensitive so please use the same case in your responses:
+
+```
+? Please select from one of the below mentioned services: NoSQL Database
+
+Welcome to the NoSQL DynamoDB database wizard
+This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
+
+? Please provide a friendly name for your resource that will be used to label this category in the project: Stories
+? Please provide table name: Stories
+
+You can now add columns to the table.
+
+? What would you like to name this column: id
+? Please choose the data type: string
+? Would you like to add another column? Yes
+? What would you like to name this column: title
+? Please choose the data type: string
+? Would you like to add another column? Yes
+? What would you like to name this column: content_url
+? Please choose the data type: string
+? Would you like to add another column? Yes
+? What would you like to name this column: num_likes
+? Please choose the data type: number
+? Would you like to add another column? No
+
+Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.
+
+To learn more about primary keys, see:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
+
+? Please choose partition key for the table: id
+? Do you want to add a sort key to your table? No
+
+You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.
+To learn more about indexes, see:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes
+
+? Do you want to add global secondary indexes to your table? No
+? Do you want to add a Lambda Trigger for your Table? No
+```
+
+Your Dynamo DB storage is ready!
 
 ### Creating an S3 bucket
 
 Let's add an S3 bucket to store the news articles for your website:
 
-    1. Navigate to the [AWS Console](https://console.aws.amazon.com/console/home)
-    2. In the search bar under `Find Services`, type `S3`
-    3. Click on S3. You will navigate into the Amazon S3 Console.
-    4. Click on `Create bucket`
-    5. In the `General Configuration` section:
-        1. Type in a bucket name like `<username>-ghc-2020-news-bulletin`
-        2. Replace `<username>` with a unique name. All S3 bucket names have to be unique globally
-        3. Choose the region that is closest to where you are based. For example, I live in Seattle so I chose `US West (Oregon) us-west-2`
-    6. Don't make any other changes and click on `Create Bucket` at the bottom of the page
+1. Navigate to the [AWS Console](https://console.aws.amazon.com/console/home)
+2. In the search bar under `Find Services`, type `S3`
+3. Click on S3. You will navigate into the Amazon S3 Console.
+4. Click on `Create bucket`
+5. In the `General Configuration` section:
+    1. Type in a bucket name like `<username>-ghc-2020-news-bulletin`
+    2. Replace `<username>` with a unique name. All S3 bucket names have to be unique globally
+    3. Choose the region that is closest to where you are based. For example, I live in Seattle so I chose `US West (Oregon) us-west-2`
+6. Don't make any other changes and click on `Create Bucket` at the bottom of the page
     
 Your S3 bucket for storing new stories is ready!
 
@@ -239,7 +239,7 @@ Instructions:
     import json
     
     TABLE_STORIES = "Stories-dev"
-    S3_BUCKET_NAME = "ghc2020-test1"
+    S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
     
     def handler(event, context):
       logging.info('Creating Dynamo DB client')
@@ -270,7 +270,10 @@ Instructions:
         }
       )
       print('Stored record in Dynamo DB')
-      return True
+      return {
+        'statusCode': 200,
+        'body': json.dumps('Story created successfully!')
+      }
     ```
 5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
 5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
@@ -545,7 +548,7 @@ Test your changes on AWS Console:
 
 ```
 ---
-Create a front-end:
+Let's create the Front-end:
 ---
 Okay, now you're all set with the backend code! Let's dive into front-end! Since this workshop focuses mainly on AWS backend code, your will simply copy over resources from the GitHub link into your package.
 
@@ -555,12 +558,12 @@ Instructions to do this are as follows:
     cd ~
     mkdir ghc_2020_workshop_code
     cd ghc_2020_workshop_code
-    gh repo clone uttarashekar/ghc_2020_aws_workshop
+    git clone https://github.com/uttarashekar/ghc_2020_aws_workshop.git
     ```
     This command should pull the code from our workshop GitHub link into your workspace.
 
 2. Copy over the following directories from the workshop project into your project's workspace. Follow the same path tree:
-    ```aidl
+    ```
     /public
     /src
     ```
@@ -579,10 +582,20 @@ Instructions to do this are as follows:
     
     npm i react-router-dom
     ```
+4. Go to `package.json` under the root directory and replace the `script` section with the following:
+    ```
+    "scripts": {
+        "start": "webpack --mode=development",
+        "build": "webpack --mode=production",
+        "dev": "webpack-dev-server"
+      }
+    ```
 4. Run your website on local host by calling the following command:
-```
-npm run dev
-```
+    ```
+    npm build
+    npm run dev
+    ```
+5. Go to http://localhost:8080/
 5. Scroll to the bottom of the page and Create a new story
 6. Click Submit
 7. Refresh the page
