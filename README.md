@@ -38,6 +38,10 @@ Setup:
     mkdir ghc2020_aws_workshop
     cd ghc2020_aws_workshop
     ```
+3. Clone this git repository to get the boilerplate front-end code for the project:
+    ```
+    git clone https://github.com/uttarashekar/aws-workshop-community-news-bulletin.git
+    ```
     
 4. Configure your AWS Amplify
     ```
@@ -64,16 +68,6 @@ Setup:
     ? Profile Name:  amplify-<username>
     
     Successfully set up the new user.
-    ```
-
-4. Create a new React project
-    ```
-    npx create-react-app aws-community-news-bulletin
-    ```
-
-5. Navigate into the folder
-    ```
-    cd aws-community-news-bulletin
     ```
 
 6. Initialize AWS Amplify. 
@@ -548,33 +542,17 @@ Test your changes on AWS Console:
 
 ```
 ---
-Let's create the Front-end:
+Let's look at the results on the Front-end!
 ---
-Okay, now you're all set with the backend code! Let's dive into front-end! Since this workshop focuses mainly on AWS backend code, your will simply copy over resources from the GitHub link into your package.
+Okay, now you're all set with the backend code! Let's dive into front-end!
 
 Instructions to do this are as follows:
-1. Go to your workspace directory outside of this project.
-    ```aidl
-    cd ~
-    mkdir ghc_2020_workshop_code
-    cd ghc_2020_workshop_code
-    git clone https://github.com/uttarashekar/ghc_2020_aws_workshop.git
-    ```
-    This command should pull the code from our workshop GitHub link into your workspace.
 
-2. Copy over the following directories from the workshop project into your project's workspace. Follow the same path tree:
-    ```
-    /public
-    /src
-    ```
-3. Copy over the following files from the workshop project into your project's workspace. Follow the same path tree:
-    ```
-    .babelrc
-    webpack.config.js
-    ```
-3. Go to your terminal and run the following commands:
+1. Go to your terminal and run the following commands:
     ```
     npm i -S react react-dom webpack
+    
+    npm install -D webpack-cli
     
     npm install --save-dev @babel/core @babel/preset-env \@babel/preset-react babel-loader
     
@@ -582,21 +560,18 @@ Instructions to do this are as follows:
     
     npm i react-router-dom
     ```
-4. Go to `package.json` under the root directory and replace the `script` section with the following:
+    This command will install the necessary modules required to build your front-end website
+    
+2. Run your website on local host by calling the following command:
     ```
-    "scripts": {
-        "start": "webpack --mode=development",
-        "build": "webpack --mode=production",
-        "dev": "webpack-dev-server"
-      }
-    ```
-4. Run your website on local host by calling the following command:
-    ```
-    npm build
+    npm run-script build
+    
+    npm start 
+    
     npm run dev
     ```
-5. Go to http://localhost:8080/
-5. Scroll to the bottom of the page and Create a new story
-6. Click Submit
-7. Refresh the page
-8. See your story show up
+3. Go to http://localhost:8080/
+4. Scroll to the bottom of the page and Create a new story
+5. Click Submit
+6. Refresh the page
+7. See your story show up
