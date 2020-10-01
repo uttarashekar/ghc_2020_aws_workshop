@@ -639,3 +639,4 @@ Thank You!
 * To the attendees of our workshop for showing your support
 * [HTML5 Up](https://html5up.net/) for graciously providing free UI themes for us to use for this workshop.
 * [Unsplash](https://unsplash.com/photos/fqPzCNyVVhA) for providing a free image of Seattle that we could use for this workshop.
+* [Zyro AI Content Generator](https://zyro.com/ai/content-generator)
