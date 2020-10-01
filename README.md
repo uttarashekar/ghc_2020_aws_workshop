@@ -625,6 +625,11 @@ Here are some tasks that you can do in your own time:
 
 ---
 
+Workshop Material
+---
+1. [Workshop slides](https://github.com/uttarashekar/ghc_2020_aws_workshop/blob/master/Grace%20Hopper%202020.pptx)
+2. [Handbook/workbook](https://github.com/uttarashekar/ghc_2020_aws_workshop/blob/master/GHC2020-CommunityBlog-AWSService.docx)
+
 Contact Us
 ---
 Feel free to reach out to us on LinkedIn if you have any questions:
