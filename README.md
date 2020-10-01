@@ -11,6 +11,10 @@ Pre-requisites:
 2. If you don't have Python installed, make sure you have installed Python on your computer
     1. Go to [this link](https://www.python.org/downloads/)
     2. Download the latest version of Python
+
+3. Install git
+    1. Go to https://git-scm.com/downloads
+    2. Download the latest version 
     
 3. Install npm. 
     1. Go to https://www.npmjs.com/get-npm
@@ -340,13 +344,7 @@ We can add permissions as follows:
         }
     ```
 7. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
-9. Now you are ready to push your resources to the cloud. Go to your CLI and type:
-    ```
-    amplify push
-    ```
-    This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
-9. Wait until the command succeeds.
-10. Great, your createStory API is ready! We'll test this out on AWS Console soon!
+8. Great, your createStory API is ready! We'll test this out on AWS Console soon!
 
 ---
 ### ReadStories API:
