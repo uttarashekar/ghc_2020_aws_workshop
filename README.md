@@ -1,4 +1,7 @@
-Workshop Instructions:
+# Build your Platform using AWS Tech!
+
+
+## Workshop Instructions
 
 Pre-requisites:
 ---
