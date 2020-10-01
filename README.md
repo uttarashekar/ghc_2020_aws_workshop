@@ -21,36 +21,37 @@ Pre-requisites:
     2. Click on the `Download Node.js and npm` button
     3. Download the `12.18.4 LTS` version (Recommended for most users)
 
-4. Download, install and configure the Amplify CLI (may require admin (sudo) permissions):
-   ```
-   npm install -g @aws-amplify/cli 
-   ```
 ---
 
 Setup:
 ---
 
-1. Open your terminal and navigate to the root (or a location where you want to create your project)
+1. Download, install and configure the Amplify CLI (may require admin (sudo) permissions):
+   ```
+   npm install -g @aws-amplify/cli 
+   ```
+   
+2. Open your terminal and navigate to the root (or a location where you want to create your project)
     ```
     cd ~
     ```
 
-2. Create a directory for this workshop and navigate into it
+3. Create a directory for this workshop and navigate into it
     ```
     mkdir ghc2020_aws_workshop
     cd ghc2020_aws_workshop
     ```
-3. Clone this git repository to get the boilerplate front-end code for the project and navigate into the project codebase:
+4. Clone this git repository to get the boilerplate front-end code for the project and navigate into the project codebase:
     ```
     git clone https://github.com/uttarashekar/aws-workshop-community-news-bulletin.git
     cd aws-workshop-community-news-bulletin
     ```
     
-4. Configure your AWS Amplify
+5. Configure your AWS Amplify
     ```
     amplify configure
     ```
-4. Follow the instructions as shown on the terminal and AWS Console. Make sure you create a new AWS Profile for this project:
+6. Follow the instructions as shown on the terminal and AWS Console. Make sure you create a new AWS Profile for this project:
     ```
     Sign in to your AWS administrator account:
     https://console.aws.amazon.com/
@@ -73,7 +74,7 @@ Setup:
     Successfully set up the new user.
     ```
 
-6. Initialize AWS Amplify. 
+7. Initialize AWS Amplify. 
     ```
     amplify init
     ```
@@ -235,22 +236,26 @@ Instructions:
     S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
     
     def handler(event, context):
-      logging.info('Creating Dynamo DB client')
-      print("Received event: {}".format(event))
+    
+      # Initializing Dynamo DB client
       dynamodb_client = boto3.resource('dynamodb')
       stories_table = dynamodb_client.Table(TABLE_STORIES)
     
+      # Initializing S3 Client
       s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
       s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
     
+      # Reading Event Body
       event_body = json.loads(event['body'])
     
-    
+      # Assigning UUID as ID for the Story
       id = "story-"+str(uuid.uuid4())
     
-      # store text content in s3
+      # Store text content in s3 as a text file
       content = event_body['content']
-      content_key = event_body['title'].strip().replace(" ", "-")+".txt"
+    
+      # File name is a combination of the Story ID and the title
+      content_key = id + "-" +event_body['title'].strip().replace(" ", "-")+".txt"
       s3_bucket.put_object(Key=content_key, Body=content, ContentType='text/plain')
       print('Stored content in s3')
     
@@ -263,6 +268,7 @@ Instructions:
         }
       )
       print('Stored record in Dynamo DB')
+    
       return {
         'statusCode': 200,
         'body': json.dumps('Story created successfully!')
@@ -393,19 +399,23 @@ The ReadStories API will allow you to read all available stories/news posts that
     S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
     
     def handler(event, context):
-      logging.info('Creating Dynamo DB client')
-      print("Received event: {}".format(event))
+      # Initializing Dynamo DB client
       dynamodb_client = boto3.resource('dynamodb')
       stories_table = dynamodb_client.Table(TABLE_STORIES)
     
+      # Initializing S3 Client
       s3_client = boto3.resource('s3', config=Config(signature_version='s3v4'))
       s3_bucket = s3_client.Bucket(S3_BUCKET_NAME)
     
+      # Scanning the Stories table
       stories = stories_table.scan()
     
+      # For every story, we will read the text content from S3
+      # And add it to the 'content' attribute of the 'Story'
+      # Knowledge of Python dictionaries will be required to understand the following code
       for story in stories['Items']:
           print("story: {}".format(story))
-          txt_content = s3_client.Object(S3_BUCKET_NAME, story['content_url']).get()['Body'].read().decode('utf-8').splitlines()
+          txt_content = s3_client.Object(S3_BUCKET_NAME, story['content_url']).get()['Body'].read().decode('utf-8')
           print("content: {}".format(txt_content))
           story['content'] = txt_content
           print("story with content: {}".format(story))
@@ -414,6 +424,7 @@ The ReadStories API will allow you to read all available stories/news posts that
         "stories": stories['Items']
       }
     
+      # Returning stories in a response block
       response = {
         "statusCode": 200,
         "body": json.dumps(body, default=decimal_default),
@@ -547,6 +558,7 @@ Test your Read Stories API changes on AWS Console:
     {}
     ```
 8. On the panel on the right, you should be able to see list of all the stories that you have created along with their title and content.
+
 ---
 Let's look at the results on the Front-end!
 ---
@@ -574,6 +586,8 @@ Instructions to do this are as follows:
 6. Refresh the page
 7. See your story show up!
 
+---
+
 Delete your AWS resources
 ---
 To ensure that you do not get charged for the resources created during this workshop, let's go ahead and delete the resources that we have created.
@@ -581,6 +595,8 @@ To ensure that you do not get charged for the resources created during this work
 2. Click on your stack that starts with `amplify-ghc2020newsbulletin-dev` (the one that is NOT marked as `NESTED. The description`)
 3. Click on the `Delete` button. This will delete all the resources that you created for this project. 
 4. Feel free to not delete it if you want to experiment with the codebase some more.
+
+---
 
 Do It Yourself!
 ---
@@ -602,13 +618,16 @@ Here are some tasks that you can do in your own time:
     1. The CreateStory API is currently on the home page, allowing for any user to add a new story
     2. You can move the CreateStoryForm to a different page which is backed by authentication.
     3. Search for Amplify APIs with authentication which allows for only users with the correct permissions to log in and access some pages.
-    
+
+---
+
 Contact Us
 ---
 Feel free to reach out to us on LinkedIn if you have any questions:
 1. [Uttara Shekar's LinkedIn](https://www.linkedin.com/in/uttara-shekar-0aa20645/)
 2. [Melonia Mendonca's LinkedIn](https://www.linkedin.com/in/melonia-mendonca-b9b17b33/)
 
+---
 
 Thank You!
 ---
