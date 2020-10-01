@@ -533,6 +533,7 @@ The ReadStories API will allow you to read all available stories/news posts that
 
 ---
 Test your Create Story API changes on AWS Console: 
+---
 
 1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. You can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
 2. You should be able to see your `createStory` API and `readStories` API here.
