@@ -6,7 +6,7 @@
 Pre-requisites:
 ---
 1. Make sure you have an AWS account
-    1. Log in to [AWS](aws.amazon.com)
+    1. Log in to [AWS](https://aws.amazon.com/)
     2. Click on `Sign in to the Console` button on the top right
     3. Enter your Amazon username and password
     4. Click on `Sign In`
