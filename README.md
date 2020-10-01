@@ -21,26 +21,25 @@ Pre-requisites:
    ```
    npm install -g @aws-amplify/cli 
    ```
-
 ---
 
 Setup:
 ---
 
-1. Open your terminal and navigate to the location that you want to create your project
-
+1. Open your terminal and navigate to the root (or a location where you want to create your project)
     ```
     cd ~
     ```
 
-2. Create a directory and navigate into it
+2. Create a directory for this workshop and navigate into it
     ```
     mkdir ghc2020_aws_workshop
     cd ghc2020_aws_workshop
     ```
-3. Clone this git repository to get the boilerplate front-end code for the project:
+3. Clone this git repository to get the boilerplate front-end code for the project and navigate into the project codebase:
     ```
     git clone https://github.com/uttarashekar/aws-workshop-community-news-bulletin.git
+    cd aws-workshop-community-news-bulletin
     ```
     
 4. Configure your AWS Amplify
@@ -98,10 +97,6 @@ Setup:
     ```
     The `amplify init` command initializes the project, sets up deployment resources in the cloud, and makes your project ready for Amplify.
 
-7. Once this is done, call the following command on your CLI:
-    ```
-    npm i aws-amplify
-    ```
 At this point your project set up is done. Let's dive into adding new components to our service!
 
 ---
@@ -270,7 +265,7 @@ Instructions:
       }
     ```
 5. In the above code, replace `<YOUR_S3_BUCKET_NAME>` with the name you gave to your S3 bucket
-5. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
+6. Now, you want to make sure that your AWS Lambda has the permissions to access your S3 bucket and Dynamo DB storage.
 We can add permissions as follows:
     1. Navigate to the `createStory-cloudformation-template.json` file in the `createStory` directory
     2. Replace the `lambdaexecutionpolicy` section with the following:
@@ -344,14 +339,14 @@ We can add permissions as follows:
           }
         }
     ```
-6. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
-6. Now you are ready to push your resources to the cloud. Go to your CLI and type:
+7. In the above code, replace the `YOUR_S3_BUCKET_NAME` in the S3 Policy with name you gave your S3 bucket.
+9. Now you are ready to push your resources to the cloud. Go to your CLI and type:
     ```
     amplify push
     ```
     This command will prompt you for confirmation. Type Yes and push the created resources to your AWS account.
-6. Wait until the command succeeds.
-7. Great, your createStory API is ready! We'll test this out on AWS Console soon!
+9. Wait until the command succeeds.
+10. Great, your createStory API is ready! We'll test this out on AWS Console soon!
 
 ---
 ### ReadStories API:
@@ -525,22 +520,35 @@ The ReadStories API will allow you to read all available stories/news posts that
 8. Great! Your code for the readStories API is now ready!
 
 ---
-(TBD- Do we need this section??)
-Test your changes on AWS Console: 
+Test your Create Story API changes on AWS Console: 
 
-1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. YOu can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
+1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. You can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
 2. You should be able to see your `createStory` API and `readStories` API here.
 3. Click on the `createStory` API
 4. Click on `ANY` under `/story`
 5. Click on the `TEST` button on the right panel
 6. Click on the dropdown under `METHOD` and select `POST`
 7. In the Request Body section, paste the following:
-```
-{
-    
-}
+    ```
+    {
+        "title": "Hello World!",
+        "content": "A Hello, World! program generally is a computer program that outputs or displays the message Hello, World!"
+    }
+    ```
+8. On the panel on the right, you should be able to see a 200OK response for your request with a message `"Story created successfully!"`
 
-```
+Test your Read Stories API changes on AWS Console:
+1. Navigate to your AWS console and to API Gateway. Make sure you are in the same region that you chose to create your AWS resources. You can change your region by clicking on the region in the top right corner and clicking on a different region from the dropdown.
+2. You should be able to see your `createStory` API and `readStories` API here.
+3. Click on the `readStories` API
+4. Click on `ANY` under `/story`
+5. Click on the `TEST` button on the right panel
+6. Click on the dropdown under `METHOD` and select `POST`
+7. In the Request Body section, paste the following:
+    ```
+    {}
+    ```
+8. On the panel on the right, you should be able to see list of all the stories that you have created along with their title and content.
 ---
 Let's look at the results on the Front-end!
 ---
@@ -550,15 +558,7 @@ Instructions to do this are as follows:
 
 1. Go to your terminal and run the following commands:
     ```
-    npm i -S react react-dom webpack
-    
-    npm install -D webpack-cli
-    
-    npm install --save-dev @babel/core @babel/preset-env \@babel/preset-react babel-loader
-    
-    npm install --save @babel/polyfill
-    
-    npm i react-router-dom
+    npm install
     ```
     This command will install the necessary modules required to build your front-end website
     
@@ -574,4 +574,47 @@ Instructions to do this are as follows:
 4. Scroll to the bottom of the page and Create a new story
 5. Click Submit
 6. Refresh the page
-7. See your story show up
+7. See your story show up!
+
+Delete your AWS resources
+---
+To ensure that you do not get charged for the resources created during this workshop, let's go ahead and delete the resources that we have created.
+1. Go to your AWS Console and type `Cloudformation` in your search box
+2. Click on your stack that starts with `amplify-ghc2020newsbulletin-dev` (the one that is NOT marked as `NESTED. The description`)
+3. Click on the `Delete` button. This will delete all the resources that you created for this project. 
+4. Feel free to not delete it if you want to experiment with the codebase some more.
+
+Do It Yourself!
+---
+We hope you enjoyed participating in this workshop! 
+
+Here are some tasks that you can do in your own time:
+1. Add the ReadStory API
+    1. As shown above, you can create the read story API and handle the code within the lambda
+    2. In the front-end, the SingleSection component will allow you to read a story directly from the ReadStory API instead of being passed over from the Home page
+    
+2. Add a LikeOrComment API
+    1. You can add components to the front-end like a Like button or a Comments section
+    2. You can also add a LikeOrComment API to allow for users to add a Like or a Comment to a story
+
+3. Add a Local Businesses table
+    1. Similar to the Stories table, you can create a separate Local Businesses table to manage the local businesses
+    2. Currently on the home page, the local businesses are hard-coded on the front-end. If you create the Local Businesses table, you can then add a createLocalBusinesses as well as readLocalBusinesses API to manage the local businesses on the page.
+4. Add auth to the `CreateStory` form
+    1. The CreateStory API is currently on the home page, allowing for any user to add a new story
+    2. You can move the CreateStoryForm to a different page which is backed by authentication.
+    3. Search for Amplify APIs with authentication which allows for only users with the correct permissions to log in and access some pages.
+    
+Contact Us
+---
+Feel free to reach out to us on LinkedIn if you have any questions:
+1. [Uttara Shekar's LinkedIn](https://www.linkedin.com/in/uttara-shekar-0aa20645/)
+2. [Melonia Mendonca's LinkedIn](https://www.linkedin.com/in/melonia-mendonca-b9b17b33/)
+
+
+Thank You!
+---
+* To Grace Hopper Conference for giving us the opportunity to present this workshop
+* To the attendees of our workshop for showing your support
+* [HTML5 Up](https://html5up.net/) for graciously providing free UI themes for us to use for this workshop.
+* [Unsplash](https://unsplash.com/photos/fqPzCNyVVhA) for providing a free image of Seattle that we could use for this workshop.

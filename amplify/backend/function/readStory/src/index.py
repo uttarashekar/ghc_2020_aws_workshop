@@ -6,11 +6,9 @@ import logging
 import json
 
 TABLE_STORIES = "Stories-dev"
-S3_BUCKET_NAME = "ghc2020-test1"
+S3_BUCKET_NAME = "<YOUR_S3_BUCKET_NAME>"
 
 def handler(event, context):
-  logging.info('Creating Dynamo DB client')
-  print("Received event: {}".format(event))
   dynamodb_client = boto3.resource('dynamodb')
   stories_table = dynamodb_client.Table(TABLE_STORIES)
   event_body = json.loads(event['body'])
