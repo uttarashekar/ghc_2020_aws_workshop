@@ -41,8 +41,8 @@ Setup:
 
 3. Create a directory for this workshop and navigate into it
     ```
-    mkdir ghc2020_aws_workshop
-    cd ghc2020_aws_workshop
+    mkdir aws_workshop
+    cd aws_workshop
     ```
 4. Clone this git repository to get the boilerplate front-end code for the project and navigate into the project codebase:
     ```
@@ -84,7 +84,7 @@ Setup:
     Answer the questions as following:
     
     ```
-    ? Enter a name for the project ghc2020NewsBulletin
+    ? Enter a name for the project awsWorkshop
     ? Enter a name for the environment dev
     ? Choose your default editor: None
     ? Choose the type of app that you're building javascript
@@ -178,7 +178,7 @@ Let's add an S3 bucket to store the news articles for your website:
 3. Click on S3. You will navigate into the Amazon S3 Console.
 4. Click on `Create bucket`
 5. In the `General Configuration` section:
-    1. Type in a bucket name like `<username>-ghc-2020-news-bulletin`
+    1. Type in a bucket name like `<username>-aws-workshop`
     2. Replace `<username>` with a unique name. All S3 bucket names have to be unique globally
     3. Choose the region that is closest to where you are based. For example, I live in Seattle so I chose `US West (Oregon) us-west-2`
 6. Don't make any other changes and click on `Create Bucket` at the bottom of the page
@@ -596,7 +596,7 @@ Delete your AWS resources
 ---
 To ensure that you do not get charged for the resources created during this workshop, let's go ahead and delete the resources that we have created.
 1. Go to your AWS Console and type `Cloudformation` in your search box
-2. Click on your stack that starts with `amplify-ghc2020newsbulletin-dev` (the one that is NOT marked as `NESTED. The description`)
+2. Click on your stack that starts with `amplify-awsworkshop-dev` (the one that is NOT marked as `NESTED. The description will indicate that this is the root stack`)
 3. Click on the `Delete` button. This will delete all the resources that you created for this project. 
 4. Feel free to not delete it if you want to experiment with the codebase some more.
 
